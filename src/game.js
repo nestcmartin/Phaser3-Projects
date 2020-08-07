@@ -9,30 +9,31 @@ export default class Game extends Phaser.Scene {
     this.load.image("wall2", "./assets/wall_2.png",);
     this.load.image("wall3", "./assets/wall_3.png",);
 
-    this.load.spritesheet("player", "./assets/zelda.png", { frameWidth: 24, frameHeight: 32 });
-    this.load.image("bow", "./assets/favicon.png",);
-    this.load.image("enemy", "./assets/enemy.png",);
     this.load.image("door", "./assets/door.png",);
+    this.load.image("bow", "./assets/favicon.png",);
+    this.load.spritesheet("enemy", "./assets/enemies.png", { frameWidth: 24, frameHeight: 32 });
+    this.load.spritesheet("player", "./assets/zelda.png", { frameWidth: 24, frameHeight: 32 });
   }
 
   create() {
+    this.setAnimations();
 
     this.background = this.add.image(0, 0, "room");
     this.background.setOrigin(0);
 
     this.walls = this.physics.add.staticGroup();
-    this.walls.create(0, 0, "wall1").setOrigin(0, 0).setVisible(false).refreshBody();
-    this.walls.create(0, 387, "wall1").setOrigin(0, 0).setVisible(false).refreshBody();
+    this.walls.create(2, 0, "wall1").setOrigin(0, 0).setVisible(false).refreshBody();
+    this.walls.create(2, 387, "wall1").setOrigin(0, 0).setVisible(false).refreshBody();
     this.walls.create(0, 0, "wall2").setOrigin(0, 0).setVisible(false).refreshBody();
     this.walls.create(0, 576, "wall2").setOrigin(0, 0).setVisible(false).refreshBody();
     this.walls.create(896, 0, "wall3").setOrigin(0, 0).setVisible(false).refreshBody();
 
-    this.door = this.physics.add.staticImage(93, 356, "door")
+    this.door = this.physics.add.staticImage(96, 350, "door")
 
     this.enemies = this.physics.add.staticGroup();
-    this.enemies.create(210, 360, "enemy");
-    this.enemies.create(800, 210, "enemy");
-    this.enemies.create(800, 490, "enemy");
+    this.enemies.create(210, 360, "enemy").setScale(3.5).anims.play('enemy_idle').refreshBody();
+    this.enemies.create(800, 210, "enemy").setScale(3.5).anims.play('enemy_idle').refreshBody();
+    this.enemies.create(800, 490, "enemy").setScale(3.5).anims.play('enemy_idle').refreshBody();
 
     this.bow = this.physics.add.sprite(600, 200, "bow");
 
@@ -43,7 +44,7 @@ export default class Game extends Phaser.Scene {
     this.player.setScale(3.5);
     this.player.body.collideWorldBounds = true;
 
-    this.setAnimations();
+
     this.setPhysics();
 
     this.cursor = this.input.keyboard.createCursorKeys();
@@ -54,6 +55,13 @@ export default class Game extends Phaser.Scene {
   }
 
   setAnimations() {
+    this.anims.create({
+      key: 'enemy_idle',
+      frames: this.anims.generateFrameNumbers('enemy'),
+      repeat: -1,
+      frameRate: 10
+    });
+
     this.anims.create({
       key: 'player_idle_up',
       frames: this.anims.generateFrameNumbers('player', {
