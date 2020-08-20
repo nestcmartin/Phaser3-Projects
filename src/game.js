@@ -10,7 +10,8 @@ export default class Game extends Phaser.Scene {
     this.load.image("wall3", "./assets/wall_3.png",);
 
     this.load.image("door", "./assets/door.png",);
-    this.load.image("bow", "./assets/favicon.png",);
+    this.load.image("bow", "./assets/bow.png",);
+    this.load.image("arrow", "./assets/arrow.png",);
     this.load.spritesheet("enemy", "./assets/enemies.png", { frameWidth: 24, frameHeight: 32 });
     this.load.spritesheet("player", "./assets/zelda.png", { frameWidth: 24, frameHeight: 32 });
   }
@@ -36,6 +37,7 @@ export default class Game extends Phaser.Scene {
     this.enemies.create(800, 490, "enemy").setScale(3.5).anims.play('enemy_idle').refreshBody();
 
     this.bow = this.physics.add.sprite(600, 200, "bow");
+    this.arrows = this.physics.add.group();
 
     this.player = this.physics.add.sprite(this.cameras.main.centerX, this.cameras.main.centerY, "player", 2);
     this.player.body.setSize(20, 16);
@@ -44,14 +46,20 @@ export default class Game extends Phaser.Scene {
     this.player.setScale(3.5);
     this.player.body.collideWorldBounds = true;
 
-
     this.setPhysics();
 
     this.cursor = this.input.keyboard.createCursorKeys();
 
-    this.health = 100;
+    this.health = 3;
     this.hasBow = false;
     this.numEnemies = 3;
+    this.invulnerable = false;
+    this.invulnerableTimer = 0;
+
+    this.facingUp = true;
+    this.facingDown = false;
+    this.facingLeft = false;
+    this.facingRight = false;
   }
 
   setAnimations() {
@@ -140,6 +148,7 @@ export default class Game extends Phaser.Scene {
   }
 
   setPhysics() {
+    this.physics.add.collider(this.arrows, this.enemies, this.killEnemy, null, this);
     this.physics.add.overlap(this.player, this.bow, this.getWeapon, null, this);
     this.physics.add.collider(this.player, this.enemies, this.damagePlayer, null, this);
     this.physics.add.collider(this.player, this.door, this.checkRoom, null, this);
@@ -149,32 +158,56 @@ export default class Game extends Phaser.Scene {
 
   update(time, delta) {
     this.handleInput(delta);
+    if (this.invulnerable) {
+      this.invulnerableTimer += (delta / 1000);
+      if (this.invulnerableTimer > 1.0) {
+        this.invulnerableTimer = 0;
+        this.invulnerable = false;
+        this.player.alpha = 1;
+      }
+    }
   }
 
   handleInput(delta) {
     if (this.cursor.right.isDown) {
       this.player.setVelocity(0, 0);
       this.player.setVelocityX(25 * delta);
+      this.facingUp = false;
+      this.facingDown = false;
+      this.facingLeft = false;
+      this.facingRight = true;
       if (this.player.anims.getCurrentKey() != 'player_walk_right') this.player.anims.play('player_walk_right');
     }
     else if (this.cursor.left.isDown) {
       this.player.setVelocity(0, 0);
       this.player.setVelocityX(-25 * delta);
+      this.facingUp = false;
+      this.facingDown = false;
+      this.facingLeft = true;
+      this.facingRight = false;
       if (this.player.anims.getCurrentKey() != 'player_walk_left') this.player.anims.play('player_walk_left');
     }
     else if (this.cursor.down.isDown) {
       this.player.setVelocity(0, 0);
       this.player.setVelocityY(25 * delta);
+      this.facingUp = false;
+      this.facingDown = true;
+      this.facingLeft = false;
+      this.facingRight = false;
       if (this.player.anims.getCurrentKey() != 'player_walk_down') this.player.anims.play('player_walk_down');
     }
     else if (this.cursor.up.isDown) {
       this.player.setVelocity(0, 0);
       this.player.setVelocityY(-25 * delta);
+      this.facingUp = true;
+      this.facingDown = false;
+      this.facingLeft = false;
+      this.facingRight = false;
       if (this.player.anims.getCurrentKey() != 'player_walk_up') this.player.anims.play('player_walk_up');
     }
     else if (Phaser.Input.Keyboard.JustDown(this.cursor.space)) {
       this.player.setVelocity(0, 0);
-      if (this.hasWeapon()) console.log("payun payun");
+      if (this.hasWeapon()) this.shoot(delta);
     }
     else if (Phaser.Input.Keyboard.JustUp(this.cursor.up)) {
       this.player.setVelocity(0, 0);
@@ -208,13 +241,21 @@ export default class Game extends Phaser.Scene {
     this.hasBow = true;
   }
 
+  killEnemy(arrow, enemy) {
+    arrow.disableBody(true, true);
+    enemy.disableBody(true, true);
+    this.numEnemies--;
+  }
+
   damagePlayer(player, enemy) {
-    if (this.hasWeapon()) {
-      enemy.disableBody(true, true);
-      this.numEnemies--;
-    }
-    else {
+    //if (this.hasWeapon()) {
+    //  enemy.disableBody(true, true);
+    //  this.numEnemies--;
+    //}
+    if (!this.invulnerable) {
       this.health--;
+      this.invulnerable = true;
+      this.player.alpha = 0.5;
     }
   }
 
@@ -224,6 +265,27 @@ export default class Game extends Phaser.Scene {
     }
     else {
       console.log("Enemies left: " + this.numEnemies);
+    }
+  }
+
+  shoot(delta) {
+    var arrow = this.arrows.create(this.player.x, this.player.y, "arrow");
+
+    if (this.facingUp) {
+      arrow.angle = -90;
+      arrow.body.setVelocity(0, -50 * delta);
+    }
+    else if (this.facingDown) {
+      arrow.angle = 90;
+      arrow.body.setVelocity(0, 50 * delta);
+    }
+    else if (this.facingLeft) {
+      arrow.angle = 180;
+      arrow.body.setVelocity(-50 * delta, 0);
+    }
+    else if (this.facingRight) {
+      arrow.angle = 0;
+      arrow.body.setVelocity(50 * delta, 0);
     }
   }
 }
