@@ -1,291 +1,274 @@
 export default class Game extends Phaser.Scene {
   constructor() {
-    super({ key: 'main' });
+    super({ key: 'game' });
   }
 
   preload() {
-    this.load.image("room", "./assets/room.png",);
-    this.load.image("wall1", "./assets/wall_1.png",);
-    this.load.image("wall2", "./assets/wall_2.png",);
-    this.load.image("wall3", "./assets/wall_3.png",);
 
-    this.load.image("door", "./assets/door.png",);
-    this.load.image("bow", "./assets/bow.png",);
-    this.load.image("arrow", "./assets/arrow.png",);
-    this.load.spritesheet("enemy", "./assets/enemies.png", { frameWidth: 24, frameHeight: 32 });
-    this.load.spritesheet("player", "./assets/zelda.png", { frameWidth: 24, frameHeight: 32 });
+    this.load.spritesheet('player', 'assets/player.png', { frameWidth: 64, frameHeight: 64 });
+    this.load.spritesheet('enemy', 'assets/enemy.png', { frameWidth: 64, frameHeight: 64 });
+
+    this.load.image('wallh', './assets/wallh.png');
+    this.load.image('wallv', './assets/wallv.png');
+    this.load.image('door', './assets/door.png');
+    this.load.image('bow', './assets/bow.png');
+    this.load.image('key', './assets/key.png');
+    this.load.image('arrowh', './assets/arrowh.png');
+    this.load.image('arrowv', './assets/arrowv.png');
+
+    this.load.audio('dungeon', './assets/dungeon.mp3');
+    this.load.audio('shoot', './assets/shoot.wav');
+    this.load.audio('item', './assets/item.wav');
+    this.load.audio('pick', './assets/pick.wav');
+    this.load.audio('solved', './assets/solved.wav');
+    this.load.audio('hurt', './assets/hurt.wav');
+    this.load.audio('death', './assets/death.wav');
+    this.load.audio('open', './assets/open.wav');
+    this.load.audio('hit', './assets/hit.wav');
+    this.load.audio('miss', './assets/miss.wav');
   }
 
   create() {
-    this.setAnimations();
 
-    this.background = this.add.image(0, 0, "room");
-    this.background.setOrigin(0);
-
-    this.walls = this.physics.add.staticGroup();
-    this.walls.create(2, 0, "wall1").setOrigin(0, 0).setVisible(false).refreshBody();
-    this.walls.create(2, 387, "wall1").setOrigin(0, 0).setVisible(false).refreshBody();
-    this.walls.create(0, 0, "wall2").setOrigin(0, 0).setVisible(false).refreshBody();
-    this.walls.create(0, 576, "wall2").setOrigin(0, 0).setVisible(false).refreshBody();
-    this.walls.create(896, 0, "wall3").setOrigin(0, 0).setVisible(false).refreshBody();
-
-    this.door = this.physics.add.staticImage(96, 350, "door")
-
-    this.enemies = this.physics.add.staticGroup();
-    this.enemies.create(210, 360, "enemy").setScale(3.5).anims.play('enemy_idle').refreshBody();
-    this.enemies.create(800, 210, "enemy").setScale(3.5).anims.play('enemy_idle').refreshBody();
-    this.enemies.create(800, 490, "enemy").setScale(3.5).anims.play('enemy_idle').refreshBody();
-
-    this.bow = this.physics.add.sprite(600, 200, "bow");
-    this.arrows = this.physics.add.group();
-
-    this.player = this.physics.add.sprite(this.cameras.main.centerX, this.cameras.main.centerY, "player", 2);
-    this.player.body.setSize(20, 16);
-    this.player.body.offset.y = 16;
-
-    this.player.setScale(3.5);
-    this.player.body.collideWorldBounds = true;
-
-    this.setPhysics();
-
-    this.cursor = this.input.keyboard.createCursorKeys();
-
-    this.health = 3;
-    this.hasBow = false;
-    this.numEnemies = 3;
-    this.invulnerable = false;
-    this.invulnerableTimer = 0;
-
-    this.facingUp = true;
-    this.facingDown = false;
-    this.facingLeft = false;
-    this.facingRight = false;
-  }
-
-  setAnimations() {
+    // Animations
     this.anims.create({
-      key: 'enemy_idle',
-      frames: this.anims.generateFrameNumbers('enemy'),
-      repeat: -1,
+      key: 'player_walk',
+      frames: this.anims.generateFrameNumbers('player'),
+      frameRate: 16,
+      repeat: -1
+    });
+
+    this.anims.create({
+      key: 'player_idle',
+      frames: this.anims.generateFrameNumbers('player', { frames: [0] }),
       frameRate: 10
     });
 
     this.anims.create({
-      key: 'player_idle_up',
-      frames: this.anims.generateFrameNumbers('player', {
-        frames: [2]
-      }),
-      repeat: -1,
-      frameRate: 30
+      key: 'enemy_idle',
+      frames: this.anims.generateFrameNumbers('enemy'),
+      frameRate: 10,
+      repeat: -1
     });
 
-    this.anims.create({
-      key: 'player_idle_down',
-      frames: this.anims.generateFrameNumbers('player', {
-        frames: [77]
-      }),
-      repeat: -1,
-      frameRate: 30
-    });
+    // Input
+    this.controller = this.input.keyboard.createCursorKeys();
 
-    this.anims.create({
-      key: 'player_idle_right',
-      frames: this.anims.generateFrameNumbers('player', {
-        frames: [36]
-      }),
-      repeat: -1,
-      frameRate: 30
-    });
+    // Sound
+    this.itemSound = this.sound.add('item');
+    this.pickSound = this.sound.add('pick');
+    this.shootSound = this.sound.add('shoot');
+    this.solvedSound = this.sound.add('solved');
+    this.hurtSound = this.sound.add('hurt');
+    this.deathSound = this.sound.add('death');
+    this.openSound = this.sound.add('open');
+    this.hitSound = this.sound.add('hit');
+    this.missSound = this.sound.add('miss');
+    this.music = this.sound.add('dungeon', { volume: 0.5, loop: true });
+    this.music.play();
 
-    this.anims.create({
-      key: 'player_idle_left',
-      frames: this.anims.generateFrameNumbers('player', {
-        frames: [12]
-      }),
-      repeat: -1,
-      frameRate: 30
-    });
+    // Sprites
+    this.walls = this.physics.add.staticGroup();
+    this.walls.create(-40, 16, 'wallh');
+    this.walls.create(840, 16, 'wallh');
+    this.walls.create(400, 584, 'wallh');
+    this.walls.create(16, 400, 'wallv');
+    this.walls.create(784, 400, 'wallv');
 
-    this.anims.create({
-      key: 'player_walk_up',
-      frames: this.anims.generateFrameNumbers('player', {
-        frames: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11,
-          48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59]
-      }),
-      repeat: -1,
-      frameRate: 30
-    });
+    this.door = this.physics.add.staticImage(400, 24, 'door');
+    this.bow = this.physics.add.staticImage(
+      Phaser.Math.Between(48, 752), Phaser.Math.Between(48, 552), 'bow');
+    this.arrows = this.physics.add.group();
 
-    this.anims.create({
-      key: 'player_walk_down',
-      frames: this.anims.generateFrameNumbers('player', {
-        frames: [24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35,
-          72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83]
-      }),
-      repeat: -1,
-      frameRate: 30
-    });
+    this.enemies = this.physics.add.staticGroup();
+    this.enemies.create(Phaser.Math.Between(64, 736), Phaser.Math.Between(64, 536), 'enemy');
+    this.enemies.create(Phaser.Math.Between(64, 736), Phaser.Math.Between(64, 536), 'enemy');
+    this.enemies.create(Phaser.Math.Between(64, 736), Phaser.Math.Between(64, 536), 'enemy');
+    this.enemies.create(Phaser.Math.Between(64, 736), Phaser.Math.Between(64, 536), 'enemy');
 
-    this.anims.create({
-      key: 'player_walk_left',
-      frames: this.anims.generateFrameNumbers('player', {
-        frames: [36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47,
-          84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95]
-      }),
-      repeat: -1,
-      frameRate: 30
-    });
+    Phaser.Actions.Call(this.enemies.getChildren(), function (enemy) {
+      enemy.anims.play('enemy_idle');
+      enemy.body.setSize(32, 48);
+    }, this);
 
-    this.anims.create({
-      key: 'player_walk_right',
-      frames: this.anims.generateFrameNumbers('player', {
-        frames: [12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23,
-          60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71]
-      }),
-      repeat: -1,
-      frameRate: 30
-    });
-  }
+    this.player = this.physics.add.sprite(400, 300, 'player');
+    this.player.anims.play('player_idle');
+    this.player.body.setSize(32, 32);
+    this.player.body.setOffset(16, 24);
+    this.player.body.onWorldBounds = true;
+    this.player.body.setCollideWorldBounds(true);
 
-  setPhysics() {
-    this.physics.add.collider(this.arrows, this.enemies, this.killEnemy, null, this);
-    this.physics.add.overlap(this.player, this.bow, this.getWeapon, null, this);
-    this.physics.add.collider(this.player, this.enemies, this.damagePlayer, null, this);
-    this.physics.add.collider(this.player, this.door, this.checkRoom, null, this);
+    this.bowPicked = false;
+    this.keyPicked = false;
+    this.isDamaged = false;
+    this.damageTimer = 0.0;
+    this.damagedTime = 1000;
+    this.healthPoints = 3;
+
+    // Physics
     this.physics.add.collider(this.player, this.walls);
-  }
+    this.physics.add.collider(this.player, this.door, this.onCollisionPlayerDoor, null, this);
+    this.physics.add.collider(this.player, this.bow, this.onCollisionPlayerBow, null, this);
+    this.physics.add.overlap(this.player, this.enemies, this.onCollisionPlayerEnemy, null, this);
+    this.physics.add.collider(this.arrows, this.walls, this.onCollisionArrowWall, null, this);
+    this.physics.add.collider(this.arrows, this.enemies, this.onCollisionArrowEnemy, null, this);
+    this.physics.world.on('worldbounds', this.onWorldBounds, this);
 
+    // UI
+    this.healthText = this.add.text(16, 16, 'HEALTH: 3', {
+      font: "24px Arial",
+      fill: "#ff8000",
+      align: "left"
+    })
+  }
 
   update(time, delta) {
     this.handleInput(delta);
-    if (this.invulnerable) {
-      this.invulnerableTimer += (delta / 1000);
-      if (this.invulnerableTimer > 1.0) {
-        this.invulnerableTimer = 0;
-        this.invulnerable = false;
-        this.player.alpha = 1;
+
+    if (this.isDamaged) {
+      this.damageTimer += delta;
+      if (this.damageTimer > this.damagedTime) {
+        this.damageTimer = 0.0;
+        this.isDamaged = false;
+        this.player.setAlpha(1.0);
       }
     }
   }
 
   handleInput(delta) {
-    if (this.cursor.right.isDown) {
-      this.player.setVelocity(0, 0);
-      this.player.setVelocityX(25 * delta);
-      this.facingUp = false;
-      this.facingDown = false;
-      this.facingLeft = false;
-      this.facingRight = true;
-      if (this.player.anims.getCurrentKey() != 'player_walk_right') this.player.anims.play('player_walk_right');
+    if (this.controller.up.isDown) {
+      this.player.setVelocityY(-10 * delta);
+      if (this.player.anims.getCurrentKey() != 'player_walk') {
+        this.player.anims.play('player_walk');
+      }
     }
-    else if (this.cursor.left.isDown) {
-      this.player.setVelocity(0, 0);
-      this.player.setVelocityX(-25 * delta);
-      this.facingUp = false;
-      this.facingDown = false;
-      this.facingLeft = true;
-      this.facingRight = false;
-      if (this.player.anims.getCurrentKey() != 'player_walk_left') this.player.anims.play('player_walk_left');
+    else if (this.controller.down.isDown) {
+      this.player.setVelocityY(10 * delta);
+      if (this.player.anims.getCurrentKey() != 'player_walk') {
+        this.player.anims.play('player_walk');
+      }
     }
-    else if (this.cursor.down.isDown) {
-      this.player.setVelocity(0, 0);
-      this.player.setVelocityY(25 * delta);
-      this.facingUp = false;
-      this.facingDown = true;
-      this.facingLeft = false;
-      this.facingRight = false;
-      if (this.player.anims.getCurrentKey() != 'player_walk_down') this.player.anims.play('player_walk_down');
+
+    if (this.controller.left.isDown) {
+      this.player.setFlipX(false);
+      this.player.setVelocityX(-10 * delta);
+      if (this.player.anims.getCurrentKey() != 'player_walk') {
+        this.player.anims.play('player_walk');
+      }
     }
-    else if (this.cursor.up.isDown) {
-      this.player.setVelocity(0, 0);
-      this.player.setVelocityY(-25 * delta);
-      this.facingUp = true;
-      this.facingDown = false;
-      this.facingLeft = false;
-      this.facingRight = false;
-      if (this.player.anims.getCurrentKey() != 'player_walk_up') this.player.anims.play('player_walk_up');
+    else if (this.controller.right.isDown) {
+      this.player.setFlipX(true);
+      this.player.setVelocityX(10 * delta);
+      if (this.player.anims.getCurrentKey() != 'player_walk') {
+        this.player.anims.play('player_walk');
+      }
     }
-    else if (Phaser.Input.Keyboard.JustDown(this.cursor.space)) {
+
+    if (Phaser.Input.Keyboard.JustUp(this.controller.up) ||
+      Phaser.Input.Keyboard.JustUp(this.controller.left) ||
+      Phaser.Input.Keyboard.JustUp(this.controller.down) ||
+      Phaser.Input.Keyboard.JustUp(this.controller.right)) {
       this.player.setVelocity(0, 0);
-      if (this.hasWeapon()) this.shoot(delta);
+      if (this.player.anims.getCurrentKey() != 'player_idle') {
+        this.player.anims.play('player_idle');
+      }
     }
-    else if (Phaser.Input.Keyboard.JustUp(this.cursor.up)) {
-      this.player.setVelocity(0, 0);
-      this.player.anims.play('player_idle_up');
-    }
-    else if (Phaser.Input.Keyboard.JustUp(this.cursor.down)) {
-      this.player.setVelocity(0, 0);
-      this.player.anims.play('player_idle_down');
-    }
-    else if (Phaser.Input.Keyboard.JustUp(this.cursor.right)) {
-      this.player.setVelocity(0, 0);
-      this.player.anims.play('player_idle_left');
-    }
-    else if (Phaser.Input.Keyboard.JustUp(this.cursor.left)) {
-      this.player.setVelocity(0, 0);
-      this.player.anims.play('player_idle_right');
+
+    if (Phaser.Input.Keyboard.JustDown(this.controller.space)) {
+      if (this.bowPicked) {
+        this.shootArrow(delta);
+      }
     }
   }
 
+  shootArrow(delta) {
 
-  hasWeapon() {
-    return this.hasBow;
-  }
-
-  hasKey() {
-    return this.numEnemies <= 0;
-  }
-
-  getWeapon(player, bow) {
-    bow.disableBody(true, true);
-    this.hasBow = true;
-  }
-
-  killEnemy(arrow, enemy) {
-    arrow.disableBody(true, true);
-    enemy.disableBody(true, true);
-    this.numEnemies--;
-  }
-
-  damagePlayer(player, enemy) {
-    //if (this.hasWeapon()) {
-    //  enemy.disableBody(true, true);
-    //  this.numEnemies--;
-    //}
-    if (!this.invulnerable) {
-      this.health--;
-      this.invulnerable = true;
-      this.player.alpha = 0.5;
+    if (this.player.body.facing == Phaser.Physics.Arcade.FACING_RIGHT) {
+      var arrow = this.arrows.create(this.player.x, this.player.y, "arrowh");
+      arrow.body.setVelocityX(30 * delta);
     }
+    else if (this.player.body.facing == Phaser.Physics.Arcade.FACING_LEFT) {
+      var arrow = this.arrows.create(this.player.x, this.player.y, "arrowh");
+      arrow.setFlipX(true);
+      arrow.body.setVelocityX(-30 * delta);
+    }
+    else if (this.player.body.facing == Phaser.Physics.Arcade.FACING_UP) {
+      var arrow = this.arrows.create(this.player.x, this.player.y, "arrowv");
+      arrow.body.setVelocityY(-30 * delta);
+    }
+    else if (this.player.body.facing == Phaser.Physics.Arcade.FACING_DOWN) {
+      var arrow = this.arrows.create(this.player.x, this.player.y, "arrowv");
+      arrow.setFlipY(true);
+      arrow.body.setVelocityY(30 * delta);
+    }
+
+    this.shootSound.play();
+
   }
 
-  checkRoom(player, door) {
-    if (this.hasKey()) {
-      console.log("Game over!");
-    }
-    else {
-      console.log("Enemies left: " + this.numEnemies);
+  spawnKey() {
+    this.key = this.physics.add.staticImage(
+      Phaser.Math.Between(48, 752), Phaser.Math.Between(48, 552), 'key');
+    this.physics.add.collider(this.player, this.key, this.onCollisionPlayerKey, null, this);
+  }
+
+  onCollisionPlayerDoor(player, door) {
+    if (this.keyPicked) {
+      door.destroy();
+      this.openSound.play();
     }
   }
 
-  shoot(delta) {
-    var arrow = this.arrows.create(this.player.x, this.player.y, "arrow");
+  onCollisionPlayerBow(player, bow) {
+    bow.destroy();
+    this.bowPicked = true;
+    this.itemSound.play();
+  }
 
-    if (this.facingUp) {
-      arrow.angle = -90;
-      arrow.body.setVelocity(0, -50 * delta);
+  onCollisionPlayerKey(player, key) {
+    key.destroy();
+    this.keyPicked = true;
+    this.pickSound.play();
+  }
+
+  onCollisionPlayerEnemy(player, enemy) {
+
+    if (!this.isDamaged) {
+      this.player.setAlpha(0.5);
+      this.isDamaged = true;
+      this.healthPoints--;
+      this.healthText.setText('HEALTH: ' + this.healthPoints);
+      this.hurtSound.play();
+
+      if (this.healthPoints <= 0) {
+        this.music.stop();
+        this.deathSound.play();
+        this.scene.start('lose');
+      }
+
     }
-    else if (this.facingDown) {
-      arrow.angle = 90;
-      arrow.body.setVelocity(0, 50 * delta);
+  }
+
+  onCollisionArrowWall(arrow, wall) {
+    this.arrows.remove(arrow, true, true);
+    this.missSound.play();
+  }
+
+  onCollisionArrowEnemy(arrow, enemy) {
+
+    this.arrows.remove(arrow, true, true);
+    this.enemies.remove(enemy, true, true);
+    this.hitSound.play();
+
+    if (this.enemies.getLength() == 0) {
+      this.spawnKey();
+      this.solvedSound.play();
     }
-    else if (this.facingLeft) {
-      arrow.angle = 180;
-      arrow.body.setVelocity(-50 * delta, 0);
-    }
-    else if (this.facingRight) {
-      arrow.angle = 0;
-      arrow.body.setVelocity(50 * delta, 0);
-    }
+
+  }
+
+  onWorldBounds() {
+    this.music.stop();
+    this.scene.start('win');
   }
 }

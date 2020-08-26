@@ -1,6 +1,6 @@
 export default class Game extends Phaser.Scene {
   constructor() {
-    super({ key: 'main' });
+    super({ key: 'game' });
   }
 
   preload() {
@@ -32,6 +32,7 @@ export default class Game extends Phaser.Scene {
     this.despawnSound = this.sound.add('despawn');
     this.selectSound = this.sound.add('select');
     this.impulseSound = this.sound.add('impulse');
+
   }
 
   update(time, delta) {
@@ -49,24 +50,25 @@ export default class Game extends Phaser.Scene {
     }
 
     if (Phaser.Input.Keyboard.JustDown(this.impulseUpKey)) {
-      this.impulseBlock(0, -0.1);
+      this.impulseBlock(0, -1);
     }
 
     if (Phaser.Input.Keyboard.JustDown(this.impulseLeftKey)) {
-      this.impulseBlock(-0.1, 0);    
+      this.impulseBlock(-1, 0);    
     }
 
     if (Phaser.Input.Keyboard.JustDown(this.impulseDownKey)) {
-      this.impulseBlock(0, 0.1);    
+      this.impulseBlock(0, 1);    
     }
 
     if (Phaser.Input.Keyboard.JustDown(this.impulseRightKey)) {
-      this.impulseBlock(0.1, 0);
+      this.impulseBlock(1, 0);
     }
     
   }
 
   addBlock() {
+
     var block = this.matter.add.sprite(
       Phaser.Math.Between(0, 800), Phaser.Math.Between(0, 600), 'block');
     block.setVelocity(
@@ -90,7 +92,7 @@ export default class Game extends Phaser.Scene {
 
     this.blocks.getChildren()[this.currentBlock].clearTint();
     this.currentBlock = (this.currentBlock + 1) % this.blocks.getLength();
-    this.blocks.getChildren()[this.currentBlock].setTintFill(0x00ff00);
+    this.blocks.getChildren()[this.currentBlock].setTint(0x00ff00);
     console.log('Current block is ' + this.currentBlock);
 
     this.selectSound.play();
@@ -107,7 +109,7 @@ export default class Game extends Phaser.Scene {
 
     if (this.blocks.getLength() > 0) {
       this.currentBlock = (this.currentBlock + 1) % this.blocks.getLength();
-      this.blocks.getChildren()[this.currentBlock].setTintFill(0x00ff00);
+      this.blocks.getChildren()[this.currentBlock].setTint(0x00ff00);
       console.log('Current block is ' + this.currentBlock);
     }
 
