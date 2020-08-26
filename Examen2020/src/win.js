@@ -9,8 +9,16 @@ export default class Win extends Phaser.Scene {
     }
 
     create() {
+        this.controller = this.input.keyboard.createCursorKeys();
+
         this.add.image(400, 300, 'win');
         var music = this.sound.add('victory');
         music.play();
+    }
+    
+    update(time, delta) {
+        if (this.controller.space.isDown) {
+            this.scene.start('game');
+        }
     }
 }
