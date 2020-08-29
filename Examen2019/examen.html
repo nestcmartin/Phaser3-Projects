@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>examen</title>
+  <style type="text/css">
+      code{white-space: pre-wrap;}
+      span.smallcaps{font-variant: small-caps;}
+      span.underline{text-decoration: underline;}
+      div.column{display: inline-block; vertical-align: top; width: 50%;}
+  </style>
+  <style type="text/css">
+a.sourceLine { display: inline-block; line-height: 1.25; }
+a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
+a.sourceLine:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+a.sourceLine { text-indent: -1em; padding-left: 1em; }
+}
+pre.numberSource a.sourceLine
+  { position: relative; left: -4em; }
+pre.numberSource a.sourceLine::before
+  { content: attr(title);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; pointer-events: all; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {  }
+@media screen {
+a.sourceLine::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+  <link rel="stylesheet" href="docs.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-AMS_CHTML-full" type="text/javascript"></script>
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title"><div class="line-block">Examen final<br />
+Convocatoria ordinaria<br />
+Programación de Videojuegos en Lenguajes Interpretados</div></h1>
+<p class="date">10/1/2019</p>
+</header>
+<h1 id="tareas">Tareas</h1>
+<p>A partir de la plantilla base, se harán las siguientes modificaciones hasta conseguir un nuevo juego que funcionará sobre la misma plantilla. Es decir, sólo hay que hacer cambios en el código JavaScript, no en la estructura que se provee.</p>
+<h2 id="escenario-1.5-puntos">Escenario (<em>1.5 puntos</em>)</h2>
+<ul>
+<li>Se creará un escenario con bloques que formen una habitación en dos dimensiones cerrada, como en el ejemplo.</li>
+<li>En todo momento se mostrará al jugador el tiempo de juego restante y el número de colisiones que aún quedan por hacer.</li>
+</ul>
+<figure>
+<img src="ejemplo.svg" alt="Ejemplo de escenario" style="width:75.0%" /><figcaption>Ejemplo de escenario</figcaption>
+</figure>
+<h2 id="física-1.5-puntos">Física (<em>1.5 puntos</em>)</h2>
+<ul>
+<li>Dentro del escenario habrá, inicialmente, una esfera que se moverá con velocidad constante, rebotando dentro de las paredes del escenario.</li>
+<li>Además, el jugador estará representado por una cruz.</li>
+</ul>
+<h2 id="entrada-1-puntos">Entrada (<em>1 puntos</em>)</h2>
+<ul>
+<li>El personaje podrá moverse con las teclas del cursor hacia arriba, abajo, izquierda y derecha. Se valorará la calidad de esta implementación.</li>
+</ul>
+<h2 id="colisiones-2-puntos">Colisiones (<em>2 puntos</em>)</h2>
+<ul>
+<li>Cuando la cruz colisione con la bola, está se dividirá en dos bolas de la mitad del tamaño original.</li>
+<li>La podrá dividirse tres veces. Una vez dividida tres veces, otra colisión eliminará la bola completamente.</li>
+</ul>
+<h2 id="animación-1.5-punto">Animación (<em>1.5 punto</em>)</h2>
+<ul>
+<li>La cruz que represente al jugador tendrá dos animaciones: una para el estado estático, y otra para el estado de moverse.</li>
+<li>Las bolas tendrán tres animaciones: una para el estado de moverse, otra para dividirse y otra para desaparecer.</li>
+</ul>
+<h2 id="sonido-05-puntos">Sonido (<em>0,5 puntos</em>)</h2>
+<ul>
+<li>El juego tendrá dos sonidos, uno para la colisión en la que la bola se divide, y otro para la colisión en la que la bola se elimina).</li>
+</ul>
+<h2 id="juego-2-puntos">Juego (<em>2 puntos</em>)</h2>
+<ul>
+<li>Si en 30 segundos el jugador no consigue hacer desaparecer todas las bolas, habrá perdido. En este caso, hay que avisar al jugador con un mensaje en la pantalla.</li>
+<li>Cuando el jugador haya perdido, ya no se moverán las bolas ni jugador. El juego podrá reiniciarse con la tecla <code>espacio</code>.</li>
+<li>Si el jugador elimina todas las bolas dentro del tiempo establecido, habrá ganado y se informará con un texto en pantalla. En este caso, ya no se podrá seguir moviendo al jugador y el juego podrá reiniciarse con la tecla <code>espacio</code>.</li>
+</ul>
+<h1 id="evaluación">Evaluación</h1>
+<p>El examen tendrá una nota de 0 a 10, siendo necesario un 5 para aprobar.</p>
+<p>Si el código del examen no se ejecuta (error de sintaxis, solución muy lejana a lo pedido), estará suspenso.</p>
+<p>Cada apartado recibirá, como máximo, el valor indicado. Se valorará el estilo, el uso correcto de construcciones y se tendrá en cuenta la solución en general (no sólo los apartados independientemente).</p>
+<p>Es decir, <em>a partir de una versión que funcione</em>, se tendrá en cuenta la calidad del código, tanto la arquitectura como la corrección de la implementación de las funciones.</p>
+<h1 id="ejecución">Ejecución</h1>
+<p>El código se ejecutará igual que se ha hecho durante el curso, ejecutando los comandos:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb1-1" title="1"><span class="ex">npm</span> install</a>
+<a class="sourceLine" id="cb1-2" title="2"><span class="ex">node_modules/.bin/gulp</span> run</a></code></pre></div>
+<p>Se espera que, al ejecutarse estos dos comandos, se abra automáticamente una ventana del navegador con la solución.</p>
+<h1 id="entrega">Entrega</h1>
+<p>La entrega se hará a través del Campus Virtual, en la entrega habilitada para tal propósito. <strong>Se debe subir un proyecto completo en un archivo comprimido, pero sin la carpeta <code>node_modules</code></strong>. El proyecto deberá tener un archivo de texto con el nombre del alumno y su DNI. <strong>Un proyecto sin este archivo no será evaluado</strong>.</p>
+<p>La entrega es individual.</p>
+<h1 id="materiales">Materiales</h1>
+<p>Se pueden usar todos los materiales disponibles (Internet, apuntes), excepto comunicación con otros compañeros o personas externas. Esto se considerará copia.</p>
+<h1 id="copia">Copia</h1>
+<p>Cualquier intento fructuoso o infructuoso de copia supondrá la aplicación de la normativa de la asignatura y el suspenso de la convocatoria actual.</p>
+</body>
+</html>
